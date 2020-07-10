@@ -9,8 +9,6 @@ class EventSourcer():
     def add(self, num: int):
         self.value += num
         self.changesMade.append(num)
-        self.changesUndone = []  # reinitialize changesUndone
-        return self.value
 
     def subtract(self, num: int):
         return self.add(-num)
@@ -30,7 +28,6 @@ class EventSourcer():
         self.changesUndone.reverse()
         self.changesUndone.extend(undoneValues)
         self.value -= sum(undoneValues)
-        return self.value
 
     def bulk_redo(self, steps: int):
         # take the top "steps" numbers from the stack
@@ -41,5 +38,3 @@ class EventSourcer():
         redoneValues.reverse()
         self.changesMade.extend(redoneValues)
         self.value += sum(redoneValues)
-        print(self.changesMade, self.changesUndone)
-        return self.value
