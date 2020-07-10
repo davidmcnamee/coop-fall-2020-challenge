@@ -3,37 +3,43 @@ class EventSourcer():
 
     def __init__(self):
         self.value = 0
-        self.done = []
-        self.undone = []
+        self.changesMade = []  # a stack to store values that are ready for undo()
+        self.changesUndone = []  # a stack to store values that are ready for redo()
 
     def add(self, num: int):
         self.value += num
-        self.done.append(num)
+        self.changesMade.append(num)
+        self.changesUndone = []  # reinitialize changesUndone
         return self.value
 
     def subtract(self, num: int):
-        self.value -= num
-        self.done.append(-num)
-        return self.value
+        return self.add(-num)
 
     def undo(self):
-        last = self.done.pop()
-        self.value -= last
-        self.undone.append(last)
-        return self.value
+        return self.bulk_undo(1)
 
     def redo(self):
-        last = self.undone.pop()
-        self.value += last
-        self.done.append(last)
-        return self.value
+        return self.bulk_redo(1)
 
     def bulk_undo(self, steps: int):
-        for i in range(steps):
-            self.undo()
+        # take the top "steps" numbers from the stack
+        undoneValues = self.changesMade[-steps:]
+        # remove them from changesMade
+        self.changesMade = self.changesMade[:-steps]
+        # add them to changesUndone in reverse order (because it's a stack insert)
+        self.changesUndone.reverse()
+        self.changesUndone.extend(undoneValues)
+        self.value -= sum(undoneValues)
         return self.value
 
     def bulk_redo(self, steps: int):
-        for i in range(steps):
-            self.redo()
+        # take the top "steps" numbers from the stack
+        redoneValues = self.changesUndone[-steps:]
+        # remove them from changesUndone
+        self.changesUndone = self.changesUndone[:-steps]
+        # add them to changesMade in reverse order (because it's a stack insert)
+        redoneValues.reverse()
+        self.changesMade.extend(redoneValues)
+        self.value += sum(redoneValues)
+        print(self.changesMade, self.changesUndone)
         return self.value
