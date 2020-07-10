@@ -25,7 +25,7 @@ class EventSourcer():
         # remove them from changesMade
         self.changesMade = self.changesMade[:-steps]
         # add them to changesUndone in reverse order (because it's a stack insert)
-        self.changesUndone.reverse()
+        undoneValues.reverse()
         self.changesUndone.extend(undoneValues)
         self.value -= sum(undoneValues)
 
