@@ -3,12 +3,12 @@ class EventSourcer():
 
     def __init__(self):
         self.value = 0
-        self.changesMade = []  # a stack to store values that are ready for undo()
-        self.changesUndone = []  # a stack to store values that are ready for redo()
+        self.undo_history = []  # a stack to store values that are ready for undo()
+        self.redo_history = []  # a stack to store values that are ready for redo()
 
     def add(self, num: int):
         self.value += num
-        self.changesMade.append(num)
+        self.undo_history.append(num)
 
     def subtract(self, num: int):
         return self.add(-num)
@@ -21,20 +21,20 @@ class EventSourcer():
 
     def bulk_undo(self, steps: int):
         # take the top "steps" numbers from the stack
-        undoneValues = self.changesMade[-steps:]
-        # remove them from changesMade
-        self.changesMade = self.changesMade[:-steps]
-        # add them to changesUndone in reverse order (because it's a stack insert)
-        undoneValues.reverse()
-        self.changesUndone.extend(undoneValues)
-        self.value -= sum(undoneValues)
+        undo_values = self.undo_history[-steps:]
+        # remove them from undo_history
+        self.undo_history = self.undo_history[:-steps]
+        # add them to redo_history in reverse order (because it's a stack insert)
+        undo_values.reverse()
+        self.redo_history.extend(undo_values)
+        self.value -= sum(undo_values)
 
     def bulk_redo(self, steps: int):
         # take the top "steps" numbers from the stack
-        redoneValues = self.changesUndone[-steps:]
-        # remove them from changesUndone
-        self.changesUndone = self.changesUndone[:-steps]
-        # add them to changesMade in reverse order (because it's a stack insert)
-        redoneValues.reverse()
-        self.changesMade.extend(redoneValues)
-        self.value += sum(redoneValues)
+        redo_values = self.redo_history[-steps:]
+        # remove them from redo_history
+        self.redo_history = self.redo_history[:-steps]
+        # add them to undo_history in reverse order (because it's a stack insert)
+        redo_values.reverse()
+        self.undo_history.extend(redo_values)
+        self.value += sum(redo_values)
