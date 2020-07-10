@@ -20,6 +20,8 @@ class EventSourcer():
         return self.bulk_redo(1)
 
     def bulk_undo(self, steps: int):
+        if steps < 0:
+            return
         # take the top "steps" numbers from the stack
         undo_values = self.undo_history[-steps:]
         # remove them from undo_history
@@ -30,6 +32,8 @@ class EventSourcer():
         self.value -= sum(undo_values)
 
     def bulk_redo(self, steps: int):
+        if steps < 0:
+            return
         # take the top "steps" numbers from the stack
         redo_values = self.redo_history[-steps:]
         # remove them from redo_history
